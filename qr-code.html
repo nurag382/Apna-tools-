@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QR Pro Max | Apna Tools</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --accent: #000000;
+            --border: #f0f0f0;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body, html { 
+            height: 100vh; 
+            overflow: hidden; 
+            background-color: #fcfcfc; 
+            color: var(--text); 
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 15px;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+        }
+
+        .brand { font-weight: 600; font-size: 1.1rem; }
+        .brand span { font-weight: 300; color: #888; }
+
+        .tabs {
+            display: flex;
+            background: #f0f0f0;
+            padding: 4px;
+            border-radius: 14px;
+            margin: 10px 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        main { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+        .tool-card {
+            background: #fff;
+            width: 100%;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view { display: none; animation: fadeIn 0.4s ease; flex-direction: column; }
+        .view.active { display: flex; }
+
+        h1 { font-size: 1.2rem; margin-bottom: 2px; }
+        .desc { font-size: 0.75rem; color: #888; margin-bottom: 12px; }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--accent);
+            border: 1.5px solid var(--accent);
+            width: 100%;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        #reader {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f8f8f8;
+            aspect-ratio: 1/1;
+        }
+
+        /* Results Display */
+        #scan-result-container {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            text-align: left;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        .result-label { font-size: 0.65rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px; }
+        .result-content { 
+            font-size: 0.85rem; 
+            word-break: break-all; 
+            margin: 5px 0 10px 0; 
+            color: var(--text);
+            max-height: 60px;
+            overflow-y: auto;
+        }
+
+        .result-actions { display: flex; gap: 8px; }
+        .mini-btn {
+            flex: 1;
+            padding: 6px;
+            font-size: 0.7rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        #qrcode-container {
+            margin-top: 15px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #qrcode canvas, #qrcode img {
+            padding: 8px;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            max-width: 130px;
+        }
+
+        #timer { font-family: monospace; font-size: 0.75rem; opacity: 0; }
+
+        footer { padding: 10px 0; text-align: center; }
+        .footer-links a { text-decoration: none; color: #bbb; font-size: 0.65rem; margin: 0 8px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <header>
+            <div class="brand">Apna<span>Tools</span></div>
+            <a href="#" style="text-decoration: none; color: #888; font-size: 0.75rem;">Home</a>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="gen-tab-btn" onclick="switchTab('gen')">Generator</button>
+            <button class="tab-btn" id="scan-tab-btn" onclick="switchTab('scan')">Scanner</button>
+        </div>
+
+        <main>
+            <div class="tool-card">
+                <div id="gen-view" class="view active">
+                    <h1>QR Generator</h1>
+                    <p class="desc">Create & Download instantly</p>
+                    <input type="text" id="qr-input" placeholder="Enter URL or text...">
+                    <button class="action-btn" onclick="generateQR()">
+                        <span id="btn-text">Generate</span>
+                        <span id="timer">⏱ 0.0s</span>
+                    </button>
+                    
+                    <div id="qrcode-container">
+                        <div id="qrcode"></div>
+                        <button class="secondary-btn" onclick="downloadQR()">⬇ Download QR (PNG)</button>
+                    </div>
+                </div>
+
+                <div id="scan-view" class="view">
+                    <h1>QR Scanner</h1>
+                    <p class="desc">Scan via camera or image upload</p>
+                    
+                    <div id="reader"></div>
+
+                    <div id="scan-result-container">
+                        <div class="result-label">Scanned Content</div>
+                        <div class="result-content" id="scan-text-output">...</div>
+                        <div class="result-actions">
+                            <button class="mini-btn" onclick="copyResult()">Copy Text</button>
+                            <button class="mini-btn" id="open-link-btn" onclick="openResultLink()" style="display:none;">Open Link</button>
+                        </div>
+                    </div>
+
+                    <input type="file" id="qr-upload" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+                    <button class="secondary-btn" id="upload-btn" onclick="document.getElementById('qr-upload').click()">📁 Upload Image</button>
+                    <button class="action-btn" id="stop-scan-btn" style="background:#ff4444; display:none; margin-top:10px;" onclick="stopScanner()">Stop Camera</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-links">
+                <a href="#">Privacy</a><a href="#">Terms</a>
+            </div>
+            <p style="font-size: 0.65rem; color: #ccc; margin-top: 4px;">© 2026 Apna Tools</p>
+        </footer>
+    </div>
+
+    <script>
+        let html5QrCode;
+        let timerInterval;
+
+        function switchTab(type) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            if(type === 'gen') {
+                document.getElementById('gen-tab-btn').classList.add('active');
+                document.getElementById('gen-view').classList.add('active');
+                stopScanner();
+            } else {
+                document.getElementById('scan-tab-btn').classList.add('active');
+                document.getElementById('scan-view').classList.add('active');
+                startScanner();
+            }
+        }
+
+        function generateQR() {
+            const input = document.getElementById('qr-input').value;
+            if (!input) return;
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = "";
+            document.getElementById('qrcode-container').style.display = "none";
+            
+            let startTime = Date.now();
+            const timerDisplay = document.getElementById('timer');
+            const btnText = document.getElementById('btn-text');
+            timerDisplay.style.opacity = "1";
+            btnText.style.display = "none";
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerDisplay.innerText = `⏱ ${((Date.now() - startTime) / 1000).toFixed(1)}s`;
+            }, 100);
+
+            setTimeout(() => {
+                new QRCode(qrContainer, { text: input, width: 512, height: 512 });
+                clearInterval(timerInterval);
+                document.getElementById('qrcode-container').style.display = "flex";
+                btnText.style.display = "inline";
+                timerDisplay.style.opacity = "0";
+            }, 600);
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            const img = document.querySelector('#qrcode img');
+            let dataURL = canvas ? canvas.toDataURL("image/png") : (img ? img.src : null);
+
+            if (!dataURL) return;
+
+            fetch(dataURL).then(res => res.blob()).then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'QR_ApnaTools.png';
+                a.click();
+            });
+        }
+
+        // --- SCANNER LOGIC ---
+        function displayScanResult(text) {
+            const container = document.getElementById('scan-result-container');
+            const output = document.getElementById('scan-text-output');
+            const openBtn = document.getElementById('open-link-btn');
+            
+            container.style.display = "block";
+            output.innerText = text;
+
+            // Check if it's a URL
+            if (text.startsWith('http://') || text.startsWith('https://')) {
+                openBtn.style.display = "block";
+                openBtn.setAttribute('data-url', text);
+            } else {
+                openBtn.style.display = "none";
+            }
+        }
+
+        async function startScanner() {
+            html5QrCode = new Html5Qrcode("reader");
+            try {
+                await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 }, (text) => {
+                    displayScanResult(text);
+                    stopScanner();
+                });
+                document.getElementById('stop-scan-btn').style.display = "block";
+                document.getElementById('upload-btn').style.display = "none";
+            } catch (err) { console.log("Cam inactive"); }
+        }
+
+        function stopScanner() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('stop-scan-btn').style.display = "none";
+                    document.getElementById('upload-btn').style.display = "block";
+                });
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.scanFile(file, true)
+                .then(text => displayScanResult(text))
+                .catch(() => {
+                    displayScanResult("No QR code found in this image.");
+                });
+        }
+
+        function copyResult() {
+            const text = document.getElementById('scan-text-output').innerText;
+            navigator.clipboard.writeText(text);
+            const btn = event.target;
+            btn.innerText = "Copied!";
+            setTimeout(() => btn.innerText = "Copy Text", 2000);
+        }
+
+        function openResultLink() {
+            const url = document.getElementById('open-link-btn').getAttribute('data-url');
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>

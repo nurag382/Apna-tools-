@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On This Day in History | Apna Tools</title>
+    <meta name="description" content="Discover historical events, births, deaths, and holidays. Filter by gender, professions, centuries, and regions. Free online tool by Apna Tools.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #fcfcfc;
+            --surface-color: #ffffff;
+            --text-primary: #111111;
+            --text-secondary: #555555;
+            --border-color: #e0e0e0;
+            --hover-color: #f5f5f5;
+            --brand-color: #000000;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+            --font-family: 'Poppins', sans-serif;
+            --header-height: 70px; /* Used for smooth scrolling offset */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brand-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand span {
+            background: var(--brand-color);
+            color: var(--surface-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 1.2rem;
+        }
+
+        .header-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .header-links a:hover { color: var(--text-secondary); }
+
+        /* Main Section */
+        main {
+            flex: 1;
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .tool-desc {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="date"] {
+            font-family: var(--font-family);
+            padding: 0.8rem 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: var(--transition);
+            min-width: 220px;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        input[type="date"]:focus { border-color: var(--brand-color); }
+
+        .btn-primary {
+            background: var(--brand-color);
+            color: var(--surface-color);
+            border: none;
+            padding: 0.8rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-family: var(--font-family);
+        }
+
+        .btn-primary:hover {
+            background: #222;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .timer-display {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--hover-color);
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            transition: opacity 0.3s;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .timer-display.visible { opacity: 1; }
+
+        /* General Filters */
+        .filter-group {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            font-family: var(--font-family);
+        }
+
+        .filter-btn:hover {
+            border-color: #999;
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--brand-color);
+            color: var(--surface-color);
+            border-color: var(--brand-color);
+        }
+
+        /* Toggle Button for Advanced Settings */
+        .toggle-advanced-container {
+            text-align: center;
+            margin-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .btn-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font-family);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-toggle:hover { color: var(--brand-color); }
+        .btn-toggle svg { transition: transform 0.3s ease; }
+        .btn-toggle.open svg { transform: rotate(180deg); }
+
+        /* Advanced Filters - Hidden by Default */
+        .advanced-filters {
+            margin-top: 1.5rem;
+            display: none;
+            background: var(--hover-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .advanced-filters.visible {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-section {
+            margin-bottom: 1.2rem;
+        }
+        .filter-section:last-child { margin-bottom: 0; }
+
+        .filter-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 0.6rem;
+            display: block;
+        }
+
+        .advanced-filters .filter-group { justify-content: flex-start; }
+        .advanced-filters .filter-btn { padding: 0.4rem 1rem; font-size: 0.85rem; }
+
+        /* Results Area */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--brand-color);
+        }
+
+        .results-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .stats {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: #ccc;
+        }
+
+        .card-year {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--brand-color);
+            min-width: 90px;
+            flex-shrink: 0;
+            line-height: 1.2;
+        }
+
+        .card-content { flex: 1; }
+
+        .badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+            background: #eee;
+            color: var(--text-primary);
+            display: inline-block;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-text {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .card-img-container {
+            width: 140px;
+            height: 140px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-img {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        details {
+            background: #f9f9f9;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            user-select: none;
+        }
+
+        .extract {
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.8rem;
+        }
+
+        .extract a {
+            color: var(--brand-color);
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        /* Utilities */
+        .loading-container {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--brand-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .hidden { display: none !important; }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-top: auto;
+            text-align: center;
+            background: var(--surface-color);
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin: 0 0.5rem;
+        }
+
+        .footer-links a:hover { color: var(--brand-color); }
+
+        @media (max-width: 768px) {
+            .card { flex-direction: column; }
+            .card-img-container { width: 100%; height: 200px; }
+            .input-group { flex-direction: column; align-items: stretch; }
+            .timer-display { margin-top: 0.5rem; }
+            .results-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            input[type="date"], .btn-primary { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <a href="#" class="brand"><span>A</span> Apna Tools</a>
+            <nav class="header-links">
+                <a href="#">&larr; Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="tool-header">
+            <h1>On This Day Explorer</h1>
+            <p class="tool-desc">Travel back in time. Discover historical events, births, deaths, and holidays. Generate your history and let the magic happen.</p>
+        </div>
+
+        <div class="control-panel">
+            <div class="input-group">
+                <input type="date" id="dateInput" title="Select a date">
+                <button id="executeBtn" class="btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Generate History
+                </button>
+                <span id="timerDisplay" class="timer-display">⏱ 0.0s</span>
+            </div>
+
+            <!-- Basic Default Filters -->
+            <div class="filter-group" id="basicFilters">
+                <button class="filter-btn active" data-filter="all">All Records</button>
+                <button class="filter-btn" data-filter="type-events">Events</button>
+                <button class="filter-btn" data-filter="type-births">Births</button>
+                <button class="filter-btn" data-filter="type-deaths">Deaths</button>
+                <button class="filter-btn" data-filter="type-holidays">Holidays</button>
+            </div>
+
+            <!-- Toggle Button -->
+            <div class="toggle-advanced-container">
+                <button id="toggleAdvancedBtn" class="btn-toggle">
+                    ⚙️ Advanced Filters (25+ Options)
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+            </div>
+
+            <!-- Advanced Filters (Hidden by Default) -->
+            <div class="advanced-filters" id="advancedFiltersArea">
+                <div class="filter-section">
+                    <span class="filter-title">Gender / Demographics</span>
+                    <div class="filter-group">
+                        <button class="filter-btn" data-filter="gender-female">Female Figures</button>
+                        <button class="filter-btn" data-filter="gender-male">Male Figures</button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <span class="filter-title">Eras & Centuries</span>
+                    <div class="filter-group">
+                        <button class="filter-btn" data-filter="era-bc">BC Era</button>
+                        <button class="filter-btn" data-filter="era-pre1500">Pre-1500s</button>
+                        <button class="filter-btn" data-filter="era-16to18">16th - 18th Century</button>
+                        <button class="filter-btn" data-filter="era-19">19th Century</button>
+                        <button class="filter-btn" data-filter="era-20">20th Century</button>
+                        <button class="filter-btn" data-filter="era-21">21st Century</button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <span class="filter-title">Professions & Roles</span>
+                    <div class="filter-group">
+                        <button class="filter-btn" data-filter="prof-politics">Leaders & Politics</button>
+                        <button class="filter-btn" data-filter="prof-science">Science & Tech</button>
+                        <button class="filter-btn" data-filter="prof-arts">Arts & Music</button>
+                        <button class="filter-btn" data-filter="prof-literature">Writers & Literature</button>
+                        <button class="filter-btn" data-filter="prof-sports">Sports & Athletes</button>
+                        <button class="filter-btn" data-filter="prof-military">Military & Combat</button>
+                        <button class="filter-btn" data-filter="prof-entertainment">Entertainment & Film</button>
+                        <button class="filter-btn" data-filter="prof-religion">Religion & Philosophy</button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <span class="filter-title">Nature of Event</span>
+                    <div class="filter-group">
+                        <button class="filter-btn" data-filter="event-war">Wars & Battles</button>
+                        <button class="filter-btn" data-filter="event-disaster">Disasters & Tragedies</button>
+                        <button class="filter-btn" data-filter="event-space">Space & Discoveries</button>
+                        <button class="filter-btn" data-filter="event-law">Treaties & Laws</button>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <span class="filter-title">Regions</span>
+                    <div class="filter-group">
+                        <button class="filter-btn" data-filter="region-americas">The Americas</button>
+                        <button class="filter-btn" data-filter="region-europe">Europe</button>
+                        <button class="filter-btn" data-filter="region-asia">Asia & Pacific</button>
+                        <button class="filter-btn" data-filter="region-africa">Africa & Middle East</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingState" class="loading-container hidden">
+            <div class="spinner"></div>
+            <p>Scanning Wikipedia archives and running filters...</p>
+        </div>
+
+        <div id="resultsArea" class="hidden">
+            <div class="results-header">
+                <h2 id="resultTitle">Results</h2>
+                <div class="stats" id="statsDisplay">Found 0 records</div>
+            </div>
+            <div class="timeline" id="timeline"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+            <p class="copyright">&copy; <span id="currentYear"></span> Apna Tools. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const App = {
+            state: {
+                rawData: [],
+                displayData: [],
+                currentFilter: 'all',
+                timerInterval: null,
+                timeElapsed: 0,
+                isExecuting: false,
+                hasGenerated: false // Track if first generation is done to allow auto-scroll
+            },
+
+            // Advanced Keyword Regex Dictionary for Smart Filtering
+            filtersLogic: {
+                'gender-female': /\b(she|her|hers|actress|queen|princess|mother|daughter|sister|female|woman)\b/i,
+                'gender-male': /\b(he|his|him|actor|king|prince|father|son|brother|male|man)\b/i,
+                'prof-politics': /\b(president|prime minister|politician|senator|mayor|governor|king|queen|emperor|ruler|diplomat|activist)\b/i,
+                'prof-science': /\b(science|scientist|physicist|chemist|biologist|inventor|astronomer|mathematician|engineer|medical|doctor)\b/i,
+                'prof-arts': /\b(art|artist|painter|sculptor|music|musician|composer|singer|band|song|guitarist|pianist)\b/i,
+                'prof-literature': /\b(writer|author|poet|novelist|playwright|journalist|literature|book|essayist)\b/i,
+                'prof-sports': /\b(football|basketball|baseball|tennis|olympic|athlete|championship|win|coach|soccer|cricket|player)\b/i,
+                'prof-military': /\b(military|general|commander|admiral|soldier|army|navy|air force|troops|warrior)\b/i,
+                'prof-entertainment': /\b(actor|actress|film|movie|director|producer|comedian|television|hollywood|theatre)\b/i,
+                'prof-religion': /\b(pope|saint|bishop|priest|monk|rabbi|imam|philosopher|theologian|church|temple)\b/i,
+                'event-war': /\b(war|battle|siege|rebellion|revolution|attack|invasion|military|troops|bombing)\b/i,
+                'event-disaster': /\b(earthquake|fire|flood|crash|hurricane|tornado|disaster|killed|died|assassinated|tsunami|explosion)\b/i,
+                'event-space': /\b(discovered|space|apollo|nasa|launched|orbit|planet|telescope|galaxy|satellite)\b/i,
+                'event-law': /\b(law|treaty|signed|constitution|act|supreme court|legal|court|independence|declaration)\b/i,
+                'region-americas': /\b(american|us|united states|canadian|mexican|brazilian|argentine|chilean|cuban|peruvian)\b/i,
+                'region-europe': /\b(british|english|french|german|italian|spanish|russian|soviet|dutch|greek|swedish|polish|european)\b/i,
+                'region-asia': /\b(chinese|japanese|indian|korean|vietnamese|asian|filipino|thai|indonesian)\b/i,
+                'region-africa': /\b(african|egyptian|south african|nigerian|kenyan|arab|iranian|turkish|israeli|middle east)\b/i,
+            },
+
+            init() {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
+
+                this.setupEventListeners();
+            },
+
+            setupEventListeners() {
+                // Execute Button
+                document.getElementById('executeBtn').addEventListener('click', () => this.executeTool());
+                
+                // Toggle Advanced Filters
+                const toggleBtn = document.getElementById('toggleAdvancedBtn');
+                const advancedArea = document.getElementById('advancedFiltersArea');
+                
+                toggleBtn.addEventListener('click', () => {
+                    toggleBtn.classList.toggle('open');
+                    advancedArea.classList.toggle('visible');
+                    
+                    if (advancedArea.classList.contains('visible')) {
+                        toggleBtn.innerHTML = `⚙️ Hide Advanced Filters <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+                    } else {
+                        toggleBtn.innerHTML = `⚙️ Advanced Filters (25+ Options) <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+                    }
+                });
+
+                // Filter Buttons Logic
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        // Remove active from ALL buttons
+                        filterBtns.forEach(b => b.classList.remove('active'));
+                        
+                        // Add active to clicked
+                        e.target.classList.add('active');
+                        this.state.currentFilter = e.target.getAttribute('data-filter');
+                        
+                        // Apply filtering
+                        if (this.state.hasGenerated) {
+                            this.applyFilters();
+                        }
+                    });
+                });
+            },
+
+            startTimer() {
+                this.state.timeElapsed = 0;
+                const timerDisplay = document.getElementById('timerDisplay');
+                timerDisplay.classList.add('visible');
+                timerDisplay.innerText = `⏱ 0.0s`;
+
+                clearInterval(this.state.timerInterval);
+                this.state.timerInterval = setInterval(() => {
+                    this.state.timeElapsed += 0.1;
+                    timerDisplay.innerText = `⏱ ${this.state.timeElapsed.toFixed(1)}s`;
+                }, 100);
+            },
+
+            stopTimer() {
+                clearInterval(this.state.timerInterval);
+                if (this.state.timeElapsed === 0) {
+                    this.state.timeElapsed = 0.1;
+                    document.getElementById('timerDisplay').innerText = `⏱ 0.1s`;
+                }
+            },
+
+            async executeTool() {
+                if (this.state.isExecuting) return;
+
+                const dateVal = document.getElementById('dateInput').value;
+                if (!dateVal) return alert("Please select a valid date.");
+
+                this.state.isExecuting = true;
+                const dateObj = new Date(dateVal);
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                
+                document.getElementById('resultsArea').classList.add('hidden');
+                document.getElementById('loadingState').classList.remove('hidden');
+                document.getElementById('timeline').innerHTML = '';
+                
+                const options = { month: 'long', day: 'numeric' };
+                document.getElementById('resultTitle').innerText = `History for ${dateObj.toLocaleDateString('en-US', options)}`;
+
+                this.startTimer();
+
+                try {
+                    const url = `https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${month}/${day}`;
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('API fetch failed');
+                    
+                    const data = await response.json();
+                    this.state.hasGenerated = true;
+                    this.processRawData(data);
+                    
+                    // Trigger Smooth Scroll automatically after rendering
+                    setTimeout(() => this.scrollToResults(), 100);
+
+                } catch (error) {
+                    console.error(error);
+                    document.getElementById('loadingState').innerHTML = `<p style="color: red; font-weight: 600;">⚠️ Failed to load. Check your internet connection.</p>`;
+                } finally {
+                    this.stopTimer();
+                    this.state.isExecuting = false;
+                }
+            },
+
+            scrollToResults() {
+                const resultsArea = document.getElementById('resultsArea');
+                // Offset calculation (position minus header height and a small gap)
+                const headerOffset = 90; 
+                const elementPosition = resultsArea.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+              
+                window.scrollTo({
+                     top: offsetPosition,
+                     behavior: "smooth"
+                });
+            },
+
+            processRawData(apiData) {
+                let combined = [];
+                const types = ['events', 'births', 'deaths', 'holidays'];
+
+                types.forEach(type => {
+                    if (apiData[type]) {
+                        apiData[type].forEach(item => {
+                            let searchContext = item.text || "";
+                            if (item.pages && item.pages.length > 0) {
+                                searchContext += " " + (item.pages[0].description || "");
+                                searchContext += " " + (item.pages[0].extract || "");
+                            }
+
+                            combined.push({
+                                type: type,
+                                year: item.year || 9999,
+                                text: item.text,
+                                pages: item.pages || [],
+                                searchContext: searchContext.toLowerCase()
+                            });
+                        });
+                    }
+                });
+
+                combined.sort((a, b) => b.year - a.year);
+                this.state.rawData = combined;
+                
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('resultsArea').classList.remove('hidden');
+                
+                this.applyFilters();
+            },
+
+            applyFilters() {
+                let filtered = this.state.rawData;
+                const filter = this.state.currentFilter;
+
+                if (filter !== 'all') {
+                    if (filter.startsWith('type-')) {
+                        const type = filter.split('-')[1];
+                        filtered = filtered.filter(item => item.type === type);
+                    } 
+                    else if (filter.startsWith('era-')) {
+                        filtered = filtered.filter(item => {
+                            if (item.year === 9999) return false; // Skip holidays
+                            switch(filter) {
+                                case 'era-bc': return item.year < 0;
+                                case 'era-pre1500': return item.year >= 0 && item.year < 1500;
+                                case 'era-16to18': return item.year >= 1500 && item.year < 1800;
+                                case 'era-19': return item.year >= 1800 && item.year < 1900;
+                                case 'era-20': return item.year >= 1900 && item.year < 2000;
+                                case 'era-21': return item.year >= 2000 && item.year < 2100;
+                                default: return true;
+                            }
+                        });
+                    }
+                    else if (this.filtersLogic[filter]) {
+                        const regex = this.filtersLogic[filter];
+                        filtered = filtered.filter(item => regex.test(item.searchContext));
+                    }
+                }
+
+                this.state.displayData = filtered;
+                this.render();
+            },
+
+            render() {
+                const timeline = document.getElementById('timeline');
+                timeline.innerHTML = ''; 
+
+                const dataToRender = this.state.displayData.slice(0, 150);
+                const totalFiltered = this.state.displayData.length;
+                
+                const activeBtn = document.querySelector('.filter-btn.active').innerText;
+                document.getElementById('statsDisplay').innerText = `Showing ${dataToRender.length} of ${totalFiltered} records matching "${activeBtn}"`;
+
+                if (dataToRender.length === 0) {
+                    timeline.innerHTML = `<div style="text-align:center; padding: 3rem; color: #777; background:#fff; border-radius: 8px; border: 1px solid #ddd;">No historical records matched this specific filter for this date. Try another category!</div>`;
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+
+                dataToRender.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+
+                    const displayYear = item.year === 9999 ? 'Annual' : (item.year < 0 ? Math.abs(item.year) + ' BC' : item.year);
+                    
+                    let imgHtml = `<div class="card-img-container"><span class="no-img">No Image</span></div>`;
+                    let detailsHtml = '';
+                    
+                    if (item.pages && item.pages.length > 0) {
+                        const page = item.pages[0];
+                        
+                        if (page.thumbnail && page.thumbnail.source) {
+                            imgHtml = `<div class="card-img-container"><img src="${page.thumbnail.source}" loading="lazy" alt="Thumbnail"></div>`;
+                        }
+
+                        if (page.extract_html) {
+                            detailsHtml = `
+                                <details>
+                                    <summary>Deep Dive: ${page.title}</summary>
+                                    <div class="extract">
+                                        ${page.extract_html}
+                                        <br><br>
+                                        <a href="${page.content_urls.desktop.page}" target="_blank" rel="noopener noreferrer">Read full Wikipedia Article &rarr;</a>
+                                    </div>
+                                </details>
+                            `;
+                        }
+                    }
+
+                    card.innerHTML = `
+                        <div class="card-year">${displayYear}</div>
+                        <div class="card-content">
+                            <span class="badge">${item.type}</span>
+                            <div class="card-text">${item.text}</div>
+                            ${detailsHtml}
+                        </div>
+                        ${imgHtml}
+                    `;
+
+                    fragment.appendChild(card);
+                });
+
+                timeline.appendChild(fragment);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => App.init());
+    </script>
+</body>
+</html>

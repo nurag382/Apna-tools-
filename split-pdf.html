@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Split PDF | Apna Tools</title>
+  <meta name="description" content="Split PDF files easily online with Apna Tools. Upload your PDF, split pages, and download results instantly.">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background: #fff; color: #000; display: flex; flex-direction: column; justify-content: space-between; height: 100vh; overflow: hidden; }
+    header { text-align: center; padding: 1rem; background: #f8f8f8; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    header h1 { font-size: 1.5rem; }
+    header h2 { font-weight: 400; font-size: 1rem; margin-top: 0.2rem; color: #555; }
+
+    main { flex: 1; display: flex; justify-content: center; align-items: center; }
+    .tool-card { background: #fff; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 500px; }
+    .tool-card h2 { margin-bottom: 0.5rem; }
+    .tool-card p { margin-bottom: 1rem; color: #555; font-size: 0.95rem; }
+    input[type="file"] { margin-bottom: 1rem; }
+    button { padding: 0.8rem 1.5rem; background: #000; color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+    button:hover { background: #333; }
+    #timer { margin-top: 0.5rem; font-weight: 500; }
+    #output { margin-top: 1rem; }
+    a { text-decoration: none; color: #000; margin: 0 0.5rem; }
+    footer { padding: 1rem; text-align: center; background: #f8f8f8; box-shadow: 0 -2px 8px rgba(0,0,0,0.1); }
+    .no-scroll { overflow: hidden; }
+
+    @media (max-width: 600px) {
+      .tool-card { padding: 1.5rem; width: 95%; }
+    }
+  </style>
+</head>
+<body class="no-scroll">
+  <header>
+    <h1>Apna Tools</h1>
+    <h2>Split PDF</h2>
+  </header>
+
+  <main>
+    <div class="tool-card">
+      <h2>Split Your PDF</h2>
+      <p>Upload a PDF file and split it into separate pages instantly.</p>
+      <input type="file" id="pdfFile" accept="application/pdf">
+      <br>
+      <button id="splitBtn">Split PDF</button>
+      <div id="timer">⏱ 0.0s</div>
+      <div id="output"></div>
+    </div>
+  </main>
+
+  <footer>
+    <button onclick="window.location.href='index.html'">Back to Home</button>
+    <p>© Apna Tools</p>
+    <p><a href="#">Privacy Policy</a> | <a href="#">Terms</a></p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script>
+    const splitBtn = document.getElementById('splitBtn');
+    const pdfFileInput = document.getElementById('pdfFile');
+    const output = document.getElementById('output');
+    const timerEl = document.getElementById('timer');
+
+    splitBtn.addEventListener('click', async () => {
+      const file = pdfFileInput.files[0];
+      if (!file) { alert('Please select a PDF file!'); return; }
+
+      output.innerHTML = '';
+      timerEl.textContent = '⏱ 0.0s';
+      let seconds = 0;
+      const timer = setInterval(() => {
+        seconds += 0.1;
+        timerEl.textContent = `⏱ ${seconds.toFixed(1)}s`;
+      }, 100);
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+        const totalPages = pdfDoc.getPageCount();
+
+        for (let i = 0; i < totalPages; i++) {
+          const newPdf = await PDFLib.PDFDocument.create();
+          const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
+          newPdf.addPage(copiedPage);
+          const pdfBytes = await newPdf.save();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${file.name.replace('.pdf','')}_page_${i+1}.pdf`;
+          link.textContent = `Download Page ${i+1}`;
+          link.style.display = 'block';
+          link.style.marginTop = '5px';
+          output.appendChild(link);
+        }
+      } catch (err) {
+        alert('Error processing PDF: ' + err);
+      } finally {
+        clearInterval(timer);
+      }
+    });
+  </script>
+</body>
+</html>

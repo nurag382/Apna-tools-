@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JSON Formatter | Apna Tools</title>
+    <meta name="description" content="A clean, fast, and secure offline JSON Formatter and Validator by Apna Tools. Format, beautify, and minify your JSON instantly.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #000000;
+            --bg: #ffffff;
+            --card-bg: #ffffff;
+            --border: #e0e0e0;
+            --text-main: #1a1a1a;
+            --text-muted: #666666;
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling as requested */
+            background-color: var(--bg);
+            color: var(--text-main);
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            font-weight: 600;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+            font-weight: 300;
+            color: var(--text-muted);
+        }
+
+        /* --- Main Tool Section --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 0;
+            min-height: 0; /* Important for nested flex scroll */
+        }
+
+        .tool-intro {
+            text-align: center;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        .tool-intro h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .tool-intro p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+        }
+
+        .card-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+
+        .card-header span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            padding: 20px;
+            border: none;
+            resize: none;
+            outline: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            background: transparent;
+        }
+
+        /* --- Controls --- */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            background: #333;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .timer {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            min-width: 80px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 15px;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .processing {
+            animation: pulse 1s infinite;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body, html { overflow: auto; height: auto; }
+            .app-container { height: auto; }
+            .workspace { grid-template-columns: 1fr; height: 800px; }
+            .controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div class="brand">Apna<span>Tools</span></div>
+        <div class="timer" id="executionTimer">⏱ 0.0s</div>
+    </header>
+
+    <main>
+        <section class="tool-intro">
+            <h1>JSON Formatter</h1>
+            <p>Clean, validate, and beautify your JSON code instantly.</p>
+        </section>
+
+        <div class="workspace">
+            <div class="card">
+                <div class="card-header">
+                    <span>Input JSON</span>
+                    <button class="btn-outline" style="padding: 4px 10px; font-size: 10px; border-radius: 4px; cursor: pointer;" onclick="clearInput()">Clear</button>
+                </div>
+                <textarea id="jsonInput" placeholder="Paste your messy JSON here..."></textarea>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Formatted Output</span>
+                    <button class="btn-outline" style="padding: 4px 10px; font-size: 10px; border-radius: 4px; cursor: pointer;" onclick="copyOutput()">Copy</button>
+                </div>
+                <textarea id="jsonOutput" readonly placeholder="Result will appear here..."></textarea>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="processJSON('format')">
+                Beautify JSON
+            </button>
+            <button class="btn btn-outline" onclick="processJSON('minify')">
+                Minify
+            </button>
+        </div>
+    </main>
+
+    <footer>
+        <div><button onclick="window.location.reload()" style="background:none; border:none; cursor:pointer; color:inherit; font:inherit;">← Back to Home</button></div>
+        <div>&copy; 2026 Apna Tools</div>
+        <div class="footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+        </div>
+    </footer>
+</div>
+
+<script>
+    let timerInterval;
+
+    function startTimer() {
+        let startTime = Date.now();
+        const display = document.getElementById('executionTimer');
+        display.classList.add('processing');
+        
+        timerInterval = setInterval(() => {
+            let elapsedTime = (Date.now() - startTime) / 1000;
+            display.innerText = `⏱ ${elapsedTime.toFixed(1)}s`;
+        }, 100);
+        
+        return startTime;
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        document.getElementById('executionTimer').classList.remove('processing');
+    }
+
+    function processJSON(mode) {
+        const input = document.getElementById('jsonInput').value.trim();
+        const output = document.getElementById('jsonOutput');
+        
+        if (!input) {
+            alert("Please provide some JSON input first.");
+            return;
+        }
+
+        startTimer();
+
+        // Adding a slight artificial delay for the "execution feel"
+        setTimeout(() => {
+            try {
+                const parsed = JSON.parse(input);
+                if (mode === 'format') {
+                    output.value = JSON.stringify(parsed, null, 4);
+                } else {
+                    output.value = JSON.stringify(parsed);
+                }
+                output.style.color = "#1a1a1a";
+            } catch (e) {
+                output.value = "❌ Invalid JSON: " + e.message;
+                output.style.color = "#d93025";
+            } finally {
+                stopTimer();
+            }
+        }, 400); 
+    }
+
+    function copyOutput() {
+        const output = document.getElementById('jsonOutput');
+        if (!output.value) return;
+        
+        output.select();
+        document.execCommand('copy');
+        
+        const btn = event.target;
+        const originalText = btn.innerText;
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = originalText, 2000);
+    }
+
+    function clearInput() {
+        document.getElementById('jsonInput').value = '';
+        document.getElementById('jsonOutput').value = '';
+        document.getElementById('executionTimer').innerText = '⏱ 0.0s';
+    }
+</script>
+
+</body>
+</html>

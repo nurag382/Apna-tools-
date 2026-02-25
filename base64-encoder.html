@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Base64 Encoder | Apna Tools</title>
+    <meta name="description" content="Professional Base64 encoder by Apna Tools. Fast, secure, and minimalist text encoding.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --secondary: #757575;
+            --border: #ececec;
+            --accent: #000000;
+            --shadow: 0 8px 30px rgba(0,0,0,0.04);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Strict no-scroll */
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding-bottom: 1rem;
+        }
+
+        .brand { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.5px; margin-bottom: 5px; }
+        .brand span { font-weight: 300; color: var(--secondary); }
+        h1 { font-size: 1.6rem; font-weight: 600; }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-height: 0; /* Important for flex child sizing */
+            padding: 10px 0;
+        }
+
+        .tool-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 1.25rem;
+            gap: 1rem;
+            overflow: hidden;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--secondary);
+            margin-bottom: 6px;
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            background: #fafafa;
+            transition: border 0.2s;
+        }
+
+        textarea:focus { border-color: var(--accent); background: #fff; }
+
+        .action-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 2;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:hover { opacity: 0.9; }
+
+        #timer {
+            flex: 1;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--secondary);
+            text-align: right;
+        }
+
+        footer {
+            padding-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--secondary);
+        }
+
+        .btn-home {
+            border: 1px solid var(--border);
+            background: none;
+            color: var(--text);
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            flex: none;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .processing { animation: pulse 1s infinite; }
+
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <header>
+            <div class="brand">Apna<span>Tools</span></div>
+            <h1>Base64 Encoder</h1>
+        </header>
+
+        <main>
+            <div class="tool-card">
+                <div class="input-group">
+                    <label>Input Text</label>
+                    <textarea id="input" placeholder="Type or paste text here..."></textarea>
+                </div>
+
+                <div class="action-row">
+                    <button onclick="encode()">Encode Now</button>
+                    <div id="timer">⏱ 0.0s</div>
+                </div>
+
+                <div class="input-group">
+                    <label>Base64 Result</label>
+                    <textarea id="output" readonly placeholder="Result will appear here..."></textarea>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <button class="btn-home" onclick="location.reload()">Back Home</button>
+            <span>&copy; 2026 Apna Tools</span>
+            <div style="display: flex; gap: 10px;">
+                <span>Privacy</span>
+                <span>Terms</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let interval;
+
+        function encode() {
+            const input = document.getElementById('input').value;
+            const output = document.getElementById('output');
+            const timer = document.getElementById('timer');
+            const btn = document.querySelector('button');
+
+            if (!input) return;
+
+            // Start Timer
+            let start = performance.now();
+            btn.classList.add('processing');
+            btn.innerText = "Processing...";
+            
+            clearInterval(interval);
+            interval = setInterval(() => {
+                let now = performance.now();
+                timer.innerText = `⏱ ${((now - start) / 1000).toFixed(1)}s`;
+            }, 100);
+
+            // Simulation of work for visual effect
+            setTimeout(() => {
+                try {
+                    const result = btoa(unescape(encodeURIComponent(input)));
+                    output.value = result;
+                    
+                    clearInterval(interval);
+                    let end = performance.now();
+                    timer.innerText = `⏱ ${((end - start) / 1000).toFixed(2)}s`;
+                    btn.classList.remove('processing');
+                    btn.innerText = "Encode Now";
+                } catch (e) {
+                    alert("Invalid characters for encoding.");
+                    clearInterval(interval);
+                }
+            }, 400);
+        }
+    </script>
+</body>
+</html>

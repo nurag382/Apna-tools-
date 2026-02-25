@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apna Tools - 100+ Free Online Tools</title>
+    
+    <!-- Import Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables for Clean White & Gradient Theme */
+        :root {
+            --bg-body: #f8fafc;
+            --bg-header: rgba(255, 255, 255, 0.85);
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --bg-input: #f1f5f9;
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            
+            --accent-primary: #0f172a;
+            --accent-secondary: #e2e8f0;
+            --accent-invert: #ffffff;
+            
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            
+            --border-radius: 12px; /* Smaller radius for compact cards */
+            --transition: all 0.2s ease-in-out; /* Faster transition for mobile */
+            --font-family: 'Poppins', sans-serif;
+
+            --primary-gradient: linear-gradient(135deg, #0f172a 0%, #475569 100%);
+        }
+
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        ul { list-style: none; }
+
+        button, input {
+            font-family: inherit;
+            border: none;
+            outline: none;
+        }
+
+        /* Utility Classes */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px; /* Reduced for mobile */
+        }
+
+        .section-title {
+            font-size: 1.25rem; /* Smaller for mobile */
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-header);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px; /* Slimmer header */
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo svg {
+            color: var(--text-primary);
+            -webkit-text-fill-color: initial;
+            width: 24px;
+            height: 24px;
+        }
+
+        nav .nav-links {
+            display: none; /* Hidden by default on mobile */
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 16px 40px; /* Heavily reduced for mobile */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: radial-gradient(circle at center, #ffffff 0%, transparent 80%);
+        }
+
+        .hero h1 {
+            font-size: 2.2rem; /* Scaled down for mobile */
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            max-width: 600px;
+        }
+
+        /* Search Bar */
+        .hero-search {
+            position: relative;
+            width: 100%;
+            max-width: 680px;
+        }
+
+        .hero-search input {
+            width: 100%;
+            padding: 16px 20px 16px 48px;
+            font-size: 16px; /* Must be 16px to prevent iOS auto-zoom */
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            color: var(--text-primary);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+        }
+
+        .hero-search input:focus {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 1px var(--text-primary), 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .hero-search svg {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        main {
+            padding-bottom: 60px;
+        }
+
+        .category-section {
+            padding: 24px 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        #trending {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        /* 📱 COMPACT MOBILE-FIRST GRID 📱 */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 Columns on Mobile strictly */
+            gap: 12px; /* Small gap to fit more tools */
+        }
+
+        /* Compact Tool Card */
+        .tool-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 14px 12px; /* Small padding */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: var(--transition);
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .tool-card:active {
+            transform: scale(0.97); /* Nice tap effect for mobile */
+            background-color: var(--bg-card-hover);
+        }
+
+        .tool-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+
+        .tool-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .tool-card h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+            line-height: 1.2;
+            /* Truncate title to 1 line */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .tool-card p {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            line-height: 1.3;
+            /* Truncate description to exactly 2 lines */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        /* No Results Message */
+        .no-results {
+            text-align: center;
+            padding: 40px 16px;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: none;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--border-hover);
+            margin-top: 10px;
+        }
+
+        .no-results p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-col h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .footer-col p, .footer-col ul a {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .footer-col ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Mobile Nav Menu styles */
+        nav .nav-links.active {
+            display: flex;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            flex-direction: column;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        nav .nav-links.active a {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        /* 💻 TABLET & DESKTOP ADJUSTMENTS 💻 */
+        @media (min-width: 640px) {
+            .tools-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+            .hero { padding: 120px 20px 60px; }
+            .hero h1 { font-size: 3rem; }
+            .footer-content { flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
+        }
+
+        @media (min-width: 900px) {
+            .tools-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+            .tool-card { padding: 20px 16px; }
+            .tool-card h3 { font-size: 1rem; }
+            .tool-card p { font-size: 0.8rem; }
+            
+            /* Desktop Header */
+            .mobile-menu-btn { display: none; }
+            nav .nav-links { display: flex; gap: 32px; }
+            nav .nav-links a { font-size: 0.9rem; font-weight: 500; }
+        }
+
+        @media (min-width: 1200px) {
+            .tools-grid { grid-template-columns: repeat(5, 1fr); }
+            .tool-card:hover {
+                transform: translateY(-4px);
+                border-color: var(--border-hover);
+                background-color: var(--bg-card-hover);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            }
+            .tool-card:hover .tool-icon {
+                background: var(--primary-gradient);
+                color: var(--accent-invert);
+                border-color: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+                Apna Tools
+            </a>
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home" class="scroll-link">Home</a></li>
+                    <li><a href="#trending" class="scroll-link">All Tools</a></li>
+                    <li><a href="index1.html" class="scroll-link">About</a></li>
+                    <li><a href="#contact" class="scroll-link">Contact</a></li>
+                </ul>
+            </nav>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>Simplify your digital life.</h1>
+        <p>1000+ Free minimalist tools for developers, creators, and everyday use.</p>
+        
+        <!-- Search Bar -->
+        <div class="hero-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="heroSearch" placeholder="Search tools...">
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div id="noResults" class="no-results">
+            No tools found.
+            <p>Try searching with different keywords.</p>
+        </div>
+
+        <!-- Trending Section -->
+        <section class="category-section" id="trending">
+            <h2 class="section-title">Trending Tools</h2>
+            <div class="tools-grid">
+                
+                <a href="image-resizer.html" class="tool-card" data-title="image resizer compressor picture">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </div>
+                    <h3>Image Resizer</h3>
+                    <p>Resize and compress your images instantly online.</p>
+                </a>
+
+                <a href="pdf-merger.html" class="tool-card" data-title="pdf merger combine document">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <h3>PDF Merger</h3>
+                    <p>Combine multiple PDF files into a single document.</p>
+                </a>
+
+                <a href="json-formatter.html" class="tool-card" data-title="json formatter validator code">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    </div>
+                    <h3>JSON Formatter</h3>
+                    <p>Clean, beautify, and validate complex JSON data.</p>
+                </a>
+                
+                <a href="qr-code.html" class="tool-card" data-title="qr code generator maker scan barcode">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </div>
+                    <h3>QR Code Maker</h3>
+                    <p>Create custom QR codes for websites and texts.</p>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- 1. PDF Tools -->
+        <section class="category-section">
+            <h2 class="section-title">PDF Tools</h2>
+            <div class="tools-grid">
+                
+                <a href="pdf-to-word.html" class="tool-card" data-title="pdf to word converter">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <h3>PDF to Word</h3>
+                    <p>Turn PDF files into editable Word documents.</p>
+                </a>
+                
+                <a href="img-to-pdf.html" class="tool-card" data-title="image to pdf converter ">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </div>
+                    <h3>Img to PDF</h3>
+                    <p>Easily convert images to a PDF file.</p>
+                </a>
+
+                <a href="split-pdf.html" class="tool-card" data-title="split pdf extract">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <h3>Split PDF</h3>
+                    <p>Isolate key pages or divide large PDF files.</p>
+                </a>
+
+                <a href="compress-pdf.html" class="tool-card" data-title="compress pdf size reduce">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <h3>Compress PDF</h3>
+                    <p>Reduce PDF file size for easier sharing.</p>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- 2. Developer Tools -->
+        <section class="category-section">
+            <h2 class="section-title">Developer Tools</h2>
+            <div class="tools-grid">
+                
+                <a href="base64-encoder.html" class="tool-card" data-title="base64 encode decode text string">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    </div>
+                    <h3>Base64 Encoder</h3>
+                    <p>Encode or decode your text/strings to Base64.</p>
+                </a>
+
+                <a href="url-encoder.html" class="tool-card" data-title="url encoder decoder links web">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    </div>
+                    <h3>URL Encoder</h3>
+                    <p>Format URLs correctly to ensure safe data.</p>
+                </a>
+                
+                <a href="password-generator.html" class="tool-card" data-title="password generator random secure safe">
+                    <div class="tool-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <h3>Pass Generator</h3>
+                    <p>Generate highly secure, unbreakable passwords.</p>
+                </a>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col" id="about">
+                    <a href="#" class="logo" style="margin-bottom: 12px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        Apna Tools
+                    </a>
+                    <p>1000+ online tools designed for pure efficiency. Built with mobile minimalism in mind.</p>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Collections</h4>
+                    <ul>
+                        <li><a href="#">PDF Utilities</a></li>
+                        <li><a href="#">Image Editor</a></li>
+                        <li><a href="#">Dev Suite</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Use</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <span id="year"></span> Apna Tools. Minimalist by design.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Set Current Year in Footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navLinks.classList.toggle('active');
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Instant Search Logic for Mobile Performance
+        const heroSearch = document.getElementById('heroSearch');
+        const toolCards = document.querySelectorAll('.tool-card');
+        const categories = document.querySelectorAll('.category-section');
+        const noResults = document.getElementById('noResults');
+
+        function performSearch(e) {
+            const term = e.target.value.toLowerCase().trim();
+            let totalVisible = 0;
+
+            toolCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const keywords = card.getAttribute('data-title') ? card.getAttribute('data-title').toLowerCase() : '';
+                
+                if (title.includes(term) || keywords.includes(term)) {
+                    card.style.display = 'flex';
+                    totalVisible++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            categories.forEach(category => {
+                const visibleCards = Array.from(category.querySelectorAll('.tool-card')).filter(c => c.style.display !== 'none');
+                category.style.display = visibleCards.length > 0 ? 'block' : 'none';
+            });
+
+            noResults.style.display = totalVisible === 0 ? 'block' : 'none';
+
+            // Auto-scroll on first type
+            if(term.length === 1 && window.scrollY < 100) {
+                window.scrollTo({
+                    top: document.getElementById('trending').offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        heroSearch.addEventListener('input', performSearch);
+
+        // Smooth Scrolling for Nav
+        document.querySelectorAll('.scroll-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if(targetElement) {
+                    const headerHeight = document.querySelector('header').offsetHeight;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 10;
+    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth"
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

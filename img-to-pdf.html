@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO Meta Tags -->
+    <title>Image to PDF Converter - Apna Tools</title>
+    <meta name="description" content="Free offline Image to PDF converter. Convert JPG, PNG to PDF instantly in your browser. Easily rename and download your files.">
+    <meta name="keywords" content="image to pdf, jpg to pdf, png to pdf, pure html js pdf generator, rename pdf, Apna Tools, offline tool">
+    <meta name="author" content="Apna Tools">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <style>
+        :root {
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #555555;
+            --border: #e0e0e0;
+            --border-active: #000000;
+            --btn-bg: #000000;
+            --btn-text: #ffffff;
+            --hover-bg: #f5f5f5;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --font: 'Poppins', system-ui, -apple-system, sans-serif;
+            --radius: 16px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background-color: var(--bg);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--surface);
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 3rem 1rem;
+        }
+
+        .tool-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 600px;
+            padding: 2.5rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .tool-container:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .tool-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .tool-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            background-color: var(--bg);
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--border-active);
+            background-color: var(--hover-bg);
+        }
+
+        .dropzone-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .dropzone-text {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropzone-subtext {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* File List */
+        .file-list {
+            margin-bottom: 1.5rem;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            overflow: hidden;
+        }
+
+        .file-thumbnail {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            color: var(--danger);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            border: 2px solid var(--btn-bg);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: transparent;
+            color: var(--btn-bg);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Output Area & Rename Feature */
+        .output-area {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: var(--hover-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .output-area.visible {
+            display: block;
+        }
+
+        .success-msg {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rename-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rename-input {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            width: 70%;
+            max-width: 280px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            text-align: center;
+        }
+
+        .rename-input:focus {
+            border-color: var(--border-active);
+        }
+
+        .extension-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .btn-download {
+            background-color: var(--surface);
+            color: var(--text-primary);
+        }
+        
+        .btn-download:hover {
+            background-color: var(--text-primary);
+            color: var(--surface);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .tool-container {
+                padding: 1.5rem;
+            }
+            .file-name {
+                max-width: 150px;
+            }
+            .rename-container {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            .rename-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="brand">Apna Tools</div>
+    </header>
+
+    <!-- Main Tool Section -->
+    <main>
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>Image to PDF</h1>
+                <p>Convert multiple images into a single PDF document instantly. All processing happens entirely offline in your browser.</p>
+            </div>
+
+            <!-- Drag and Drop Area -->
+            <div class="dropzone" id="dropzone">
+                <span class="dropzone-icon">🖼️</span>
+                <div class="dropzone-text">Drag & drop images here</div>
+                <div class="dropzone-subtext">or click to browse files</div>
+                <input type="file" id="fileInput" multiple accept="image/*">
+            </div>
+
+            <!-- Selected Files List -->
+            <div class="file-list" id="fileList"></div>
+
+            <!-- Execution Action -->
+            <button class="btn" id="generateBtn" disabled>
+                <span>Generate PDF</span>
+            </button>
+
+            <!-- Output Result Area with Rename Feature -->
+            <div class="output-area" id="outputArea">
+                <div class="success-msg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    PDF Generated Successfully!
+                </div>
+                
+                <!-- Rename Field -->
+                <div class="rename-container">
+                    <input type="text" id="pdfFileName" class="rename-input" placeholder="Enter file name" value="Apna_Tools_Document">
+                    <span class="extension-label">.pdf</span>
+                </div>
+
+                <button class="btn btn-download" id="downloadBtn">
+                    📥 Download PDF
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+   <footer>
+    <div class="footer-links">
+        <a href="index.html">Back to home</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+    </div>
+</footer>
+    <!-- Logic Script (No External Libraries) -->
+    <script>
+        // DOM Elements
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const fileListContainer = document.getElementById('fileList');
+        const generateBtn = document.getElementById('generateBtn');
+        const outputArea = document.getElementById('outputArea');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const pdfFileNameInput = document.getElementById('pdfFileName');
+
+        // State variables
+        let selectedFiles = [];
+        let finalPdfBlob = null;
+
+        // --- UI Interactions ---
+
+        // Dropzone events
+        dropzone.addEventListener('click', () => fileInput.click());
+        
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+            fileInput.value = ''; // reset input
+        });
+
+        function handleFiles(files) {
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    selectedFiles.push(file);
+                }
+            }
+            renderFileList();
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            renderFileList();
+        }
+
+        function renderFileList() {
+            fileListContainer.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                reader.onload = (e) => {
+                    fileItem.innerHTML = `
+                        <div class="file-info">
+                            <img src="${e.target.result}" class="file-thumbnail" alt="thumbnail">
+                            <span class="file-name">${file.name}</span>
+                        </div>
+                        <button class="remove-btn" onclick="removeFile(${index})" title="Remove file">&times;</button>
+                    `;
+                };
+                reader.readAsDataURL(file);
+                fileListContainer.appendChild(fileItem);
+            });
+
+            generateBtn.disabled = selectedFiles.length === 0;
+            outputArea.classList.remove('visible');
+        }
+
+        // --- Execution Timer ---
+        let startTime;
+        let timerInterval;
+
+        function startTimer() {
+            generateBtn.disabled = true;
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                let elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                generateBtn.innerHTML = `<span>⏱ ${elapsed}s</span>`;
+            }, 100);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            generateBtn.innerHTML = `<span>Generate PDF</span>`;
+            generateBtn.disabled = false;
+        }
+
+        // --- Core PDF Generation (Pure Vanilla JS) ---
+
+        function base64ToUint8Array(base64) {
+            const raw = window.atob(base64);
+            const array = new Uint8Array(new ArrayBuffer(raw.length));
+            for (let i = 0; i < raw.length; i++) {
+                array[i] = raw.charCodeAt(i);
+            }
+            return array;
+        }
+
+        function loadImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function buildPDF(images) {
+            const chunks = [];
+            const offsets = [];
+            let objCount = 0;
+            let currentByteOffset = 0;
+
+            function pushString(str) {
+                const arr = new Uint8Array(str.length);
+                for(let i=0; i<str.length; i++) {
+                    arr[i] = str.charCodeAt(i);
+                }
+                chunks.push(arr);
+                currentByteOffset += arr.length;
+            }
+
+            function pushBytes(arr) {
+                chunks.push(arr);
+                currentByteOffset += arr.length;
+            }
+
+            function startObj() {
+                objCount++;
+                offsets.push(currentByteOffset);
+                pushString(`${objCount} 0 obj\n`);
+                return objCount;
+            }
+
+            function endObj() {
+                pushString(`\nendobj\n`);
+            }
+
+            pushString("%PDF-1.3\n");
+
+            startObj();
+            pushString("<< /Type /Catalog /Pages 2 0 R >>");
+            endObj();
+
+            const kids = [];
+            for (let i = 0; i < images.length; i++) {
+                kids.push(`${3 + i*3} 0 R`);
+            }
+            startObj();
+            pushString(`<< /Type /Pages /Kids [ ${kids.join(' ')} ] /Count ${images.length} >>`);
+            endObj();
+
+            for (let i = 0; i < images.length; i++) {
+                const img = images[i];
+
+                const MAX_DIM = 2500; 
+                let w = img.width;
+                let h = img.height;
+                if (w > MAX_DIM || h > MAX_DIM) {
+                    const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
+                    w = Math.round(w * ratio);
+                    h = Math.round(h * ratio);
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(img, 0, 0, w, h);
+
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                const base64Data = dataUrl.split(',')[1];
+                const jpegBytes = base64ToUint8Array(base64Data);
+
+                startObj();
+                pushString(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${w} ${h}] /Resources << /XObject << /I1 ${5 + i*3} 0 R >> >> /Contents ${4 + i*3} 0 R >>`);
+                endObj();
+
+                const streamStr = `q ${w} 0 0 ${h} 0 0 cm /I1 Do Q`;
+                startObj();
+                pushString(`<< /Length ${streamStr.length} >>\nstream\n${streamStr}\nendstream`);
+                endObj();
+
+                startObj();
+                pushString(`<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`);
+                pushBytes(jpegBytes);
+                pushString(`\nendstream`);
+                endObj();
+
+                await new Promise(resolve => requestAnimationFrame(resolve));
+            }
+
+            const xrefStartOffset = currentByteOffset;
+            pushString("xref\n");
+            pushString(`0 ${objCount + 1}\n`);
+            pushString("0000000000 65535 f \n"); 
+            for (let i = 0; i < offsets.length; i++) {
+                const offStr = offsets[i].toString().padStart(10, '0');
+                pushString(`${offStr} 00000 n \n`); 
+            }
+
+            pushString("trailer\n");
+            pushString(`<< /Size ${objCount + 1} /Root 1 0 R >>\n`);
+            pushString("startxref\n");
+            pushString(`${xrefStartOffset}\n`);
+            pushString("%%EOF\n");
+
+            return new Blob(chunks, { type: 'application/pdf' });
+        }
+
+        // --- Action Handlers ---
+
+        generateBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) return;
+            
+            outputArea.classList.remove('visible');
+            startTimer();
+
+            try {
+                const loadedImages = [];
+                for (let file of selectedFiles) {
+                    const img = await loadImage(file);
+                    loadedImages.push(img);
+                }
+
+                finalPdfBlob = await buildPDF(loadedImages);
+                
+                stopTimer();
+                outputArea.classList.add('visible');
+                
+                // Set default name dynamically based on first image name if available
+                if(selectedFiles.length > 0) {
+                   let defaultName = selectedFiles[0].name.split('.')[0] + '_ApnaTools';
+                   pdfFileNameInput.value = defaultName.replace(/[^a-zA-Z0-9_-]/g, '_');
+                }
+
+            } catch (err) {
+                console.error(err);
+                stopTimer();
+                alert("An error occurred while generating the PDF.");
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!finalPdfBlob) return;
+            
+            // Get custom file name from user input
+            let customName = pdfFileNameInput.value.trim();
+            
+            // Fallback if empty
+            if (!customName) {
+                customName = 'Apna_Tools_Document';
+            }
+            
+            // Ensure .pdf extension
+            if (!customName.toLowerCase().endsWith('.pdf')) {
+                customName += '.pdf';
+            }
+
+            const url = URL.createObjectURL(finalPdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = customName;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+    </script>
+</body>
+</html>

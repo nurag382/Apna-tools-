@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer - Apna Tools</title>
+    <meta name="description" content="Free online image resizer by Apna Tools. Quickly resize your photos locally in your browser with zero data uploaded to any server. Fast, secure, and easy to use.">
+    
+    <!-- SEO Keywords: Image Resizer, Online Image Resizer, Apna Tools, Resize Photo, Free Image Tool -->
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-muted: #666666;
+            --border-color: #e2e8f0;
+            --accent-black: #000000;
+            --accent-hover: #333333;
+            --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card-bg);
+            padding: 1.2rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-black);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .header-tool-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background-color: #fafafa;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent-black);
+            background-color: #f0f0f0;
+        }
+
+        .dropzone-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        .dropzone-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .dropzone-subtext {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Settings Area */
+        .settings-area {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .image-preview-container {
+            width: 100%;
+            max-height: 250px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-preview-container img {
+            max-width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+        }
+
+        .dimensions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .input-group input[type="number"] {
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-group input[type="number"]:focus {
+            border-color: var(--accent-black);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            margin-right: 0.8rem;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-black);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Action Buttons & Timer */
+        .action-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background-color: var(--accent-black);
+            color: #fff;
+            border: none;
+            padding: 0.9rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.02);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--accent-black);
+            border: 2px solid var(--accent-black);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--accent-black);
+            color: #fff;
+        }
+
+        .timer {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Result Area */
+        .result-area {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+            text-align: center;
+        }
+
+        .result-stats {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        .footer-links {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-black);
+        }
+
+        .copyright {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .dimensions-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="brand">Apna Tools</a>
+        <span class="header-tool-name">Image Resizer</span>
+    </header>
+
+    <main>
+        <h1>Image Resizer</h1>
+        <p class="subtitle">Quickly resize your images directly in your browser. 100% offline and secure.</p>
+
+        <!-- Upload Section -->
+        <div class="card" id="uploadCard">
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone-icon">🖼️</div>
+                <div class="dropzone-text">Click or drag an image here</div>
+                <div class="dropzone-subtext">Supports JPG, PNG, WEBP</div>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="card settings-area" id="settingsCard">
+            <h2>Resize Settings</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Adjust the dimensions of your image below.</p>
+            
+            <div class="image-preview-container">
+                <img id="previewImage" src="" alt="Original Image Preview">
+            </div>
+
+            <div class="dimensions-grid">
+                <div class="input-group">
+                    <label for="inputWidth">Width (px)</label>
+                    <input type="number" id="inputWidth" min="1">
+                </div>
+                <div class="input-group">
+                    <label for="inputHeight">Height (px)</label>
+                    <input type="number" id="inputHeight" min="1">
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="keepAspect" checked>
+                <label for="keepAspect">Lock Aspect Ratio</label>
+            </div>
+
+            <div class="action-container">
+                <button class="btn" id="resizeBtn">Resize Image</button>
+                <button class="btn btn-outline" id="cancelBtn">Cancel</button>
+                <div class="timer" id="timerDisplay">⏱ 0.0s</div>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div class="card result-area" id="resultCard">
+            <h2>Success!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">Your image has been successfully resized.</p>
+            
+            <div class="image-preview-container">
+                <img id="resultImage" src="" alt="Resized Image Preview">
+            </div>
+
+            <div class="result-stats" id="resultStats">
+                Original Size: 0 KB | New Size: 0 KB
+            </div>
+
+            <div class="action-container" style="justify-content: center;">
+                <a href="#" class="btn" id="downloadBtn" download="resized_image.png">⬇ Download Image</a>
+                <button class="btn btn-outline" id="resizeAnotherBtn">Resize Another</button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">Back to Home</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <div class="copyright">
+            © <span id="year"></span> Apna Tools. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Set Copyright Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // DOM Elements
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        
+        const uploadCard = document.getElementById('uploadCard');
+        const settingsCard = document.getElementById('settingsCard');
+        const resultCard = document.getElementById('resultCard');
+        
+        const previewImage = document.getElementById('previewImage');
+        const inputWidth = document.getElementById('inputWidth');
+        const inputHeight = document.getElementById('inputHeight');
+        const keepAspect = document.getElementById('keepAspect');
+        
+        const resizeBtn = document.getElementById('resizeBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        
+        const resultImage = document.getElementById('resultImage');
+        const resultStats = document.getElementById('resultStats');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resizeAnotherBtn = document.getElementById('resizeAnotherBtn');
+
+        // State Variables
+        let originalImgObj = new Image();
+        let originalFile = null;
+        let aspectRatio = 1;
+        let originalSizeKB = 0;
+        let originalFileName = "image";
+        let originalFileType = "image/png";
+
+        // --- Drag & Drop Handlers ---
+        dropzone.addEventListener('click', () => fileInput.click());
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // --- File Handling ---
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload a valid image file (JPG, PNG, WEBP).');
+                return;
+            }
+
+            originalFile = file;
+            originalSizeKB = (file.size / 1024).toFixed(2);
+            originalFileName = file.name.split('.')[0];
+            originalFileType = file.type;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                originalImgObj.src = e.target.result;
+                previewImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        originalImgObj.onload = () => {
+            // Set input values
+            inputWidth.value = originalImgObj.width;
+            inputHeight.value = originalImgObj.height;
+            aspectRatio = originalImgObj.width / originalImgObj.height;
+
+            // Switch UI
+            uploadCard.style.display = 'none';
+            settingsCard.style.display = 'block';
+        };
+
+        // --- Aspect Ratio Logic ---
+        inputWidth.addEventListener('input', () => {
+            if (keepAspect.checked && inputWidth.value > 0) {
+                inputHeight.value = Math.round(inputWidth.value / aspectRatio);
+            }
+        });
+
+        inputHeight.addEventListener('input', () => {
+            if (keepAspect.checked && inputHeight.value > 0) {
+                inputWidth.value = Math.round(inputHeight.value * aspectRatio);
+            }
+        });
+
+        // --- Cancel Button ---
+        cancelBtn.addEventListener('click', resetTool);
+        resizeAnotherBtn.addEventListener('click', resetTool);
+
+        function resetTool() {
+            fileInput.value = '';
+            uploadCard.style.display = 'block';
+            settingsCard.style.display = 'none';
+            resultCard.style.display = 'none';
+            timerDisplay.style.display = 'none';
+            timerDisplay.innerText = '⏱ 0.0s';
+            resizeBtn.disabled = false;
+            resizeBtn.style.opacity = '1';
+        }
+
+        // --- Resize Execution & Timer ---
+        resizeBtn.addEventListener('click', () => {
+            const w = parseInt(inputWidth.value);
+            const h = parseInt(inputHeight.value);
+
+            if (!w || !h || w <= 0 || h <= 0) {
+                alert("Please enter valid positive numbers for width and height.");
+                return;
+            }
+
+            // UI Prep
+            resizeBtn.disabled = true;
+            resizeBtn.style.opacity = '0.7';
+            timerDisplay.style.display = 'inline-flex';
+            
+            let startTime = performance.now();
+            let timerInterval;
+
+            // Timer Animation Update function
+            const updateTimer = () => {
+                let ms = performance.now() - startTime;
+                timerDisplay.innerText = `⏱ ${(ms / 1000).toFixed(1)}s`;
+            };
+
+            // Start timer tick
+            timerInterval = setInterval(updateTimer, 100);
+
+            // Use setTimeout to yield thread to DOM so timer becomes visible and ticking starts
+            setTimeout(() => {
+                
+                // Canvas Processing
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = w;
+                canvas.height = h;
+
+                // For better quality resizing
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+
+                ctx.drawImage(originalImgObj, 0, 0, w, h);
+
+                // Convert to Blob
+                canvas.toBlob((blob) => {
+                    // Stop Timer
+                    clearInterval(timerInterval);
+                    
+                    // Artificial minimum delay to ensure user sees the satisfying timer animation 
+                    // (since canvas resize is often < 50ms and feels instant otherwise)
+                    let elapsedTime = performance.now() - startTime;
+                    let remainingDelay = Math.max(0, 800 - elapsedTime);
+
+                    setTimeout(() => {
+                        let finalMs = performance.now() - startTime;
+                        timerDisplay.innerText = `⏱ ${(finalMs / 1000).toFixed(1)}s (Done)`;
+
+                        // Handle Result
+                        const newUrl = URL.createObjectURL(blob);
+                        resultImage.src = newUrl;
+                        
+                        let newSizeKB = (blob.size / 1024).toFixed(2);
+                        resultStats.innerHTML = `
+                            <strong>Original Size:</strong> ${originalSizeKB} KB (${originalImgObj.width}x${originalImgObj.height}) <br>
+                            <strong style="color:var(--accent-black); margin-top:8px; display:inline-block;">New Size:</strong> ${newSizeKB} KB (${w}x${h})
+                        `;
+
+                        // Setup Download Link
+                        let ext = originalFileType.split('/')[1] || 'png';
+                        downloadBtn.href = newUrl;
+                        downloadBtn.download = `${originalFileName}_resized.${ext}`;
+
+                        // Switch UI
+                        settingsCard.style.display = 'none';
+                        resultCard.style.display = 'block';
+
+                    }, remainingDelay);
+
+                }, originalFileType, 0.9); // 0.9 quality for jpeg/webp
+
+            }, 50); // slight delay to start
+        });
+
+    </script>
+</body>
+</html>
