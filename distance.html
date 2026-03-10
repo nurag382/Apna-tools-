@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Map Road Distance Finder</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #ffffff;
+            --text: #1f2937;
+            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+            z-index: 1;
+        }
+
+        .floating-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            width: 360px;
+            max-width: calc(100vw - 40px);
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            margin-top: 8px;
+            box-shadow: var(--shadow);
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 2000;
+            display: none;
+            border: 1px solid #f1f5f9;
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        .suggestion-item:hover { background: #f1f5f9; }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .dist-val {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+        }
+
+        .dist-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .btn-reset {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-reset:active { transform: scale(0.98); }
+
+        /* Hide the default routing instruction panel to keep UI clean */
+        .leaflet-routing-container { display: none !important; }
+
+        @media (max-width: 480px) {
+            .floating-panel { top: 10px; left: 10px; padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="floating-panel">
+    <h1>India Map Distance</h1>
+    
+    <div class="input-group">
+        <input type="text" id="startInput" placeholder="From: City, Village or Landmark" autocomplete="off">
+        <div id="startSugg" class="suggestions"></div>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="endInput" placeholder="To: Destination in India" autocomplete="off">
+        <div id="endSugg" class="suggestions"></div>
+    </div>
+
+    <div class="info-box">
+        <span class="dist-type">Estimated Road Distance</span>
+        <span id="roadDist" class="dist-val">0.0 km</span>
+        <div style="font-size: 12px; color: #94a3b8; margin-top: 5px;" id="timeBox">Travel time: --</div>
+    </div>
+
+    <button class="btn-reset" onclick="resetApp()">Clear Map</button>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+<script>
+    let map, routingControl, markerA, markerB;
+    const startInput = document.getElementById('startInput');
+    const endInput = document.getElementById('endInput');
+    const startSugg = document.getElementById('startSugg');
+    const endSugg = document.getElementById('endSugg');
+
+    function initMap() {
+        map = L.map('map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // Routing setup
+        routingControl = L.Routing.control({
+            waypoints: [],
+            routeWhileDragging: true,
+            showAlternatives: false,
+            addWaypoints: false,
+            lineOptions: {
+                styles: [{ color: '#2563eb', weight: 5, opacity: 0.8 }]
+            },
+            createMarker: function(i, wp) {
+                return L.marker(wp.latLng, {
+                    draggable: true,
+                    icon: L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div style="background: ${i === 0 ? '#10b981' : '#ef4444'}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8]
+                    })
+                });
+            }
+        }).addTo(map);
+
+        routingControl.on('routesfound', function(e) {
+            const routes = e.routes;
+            const summary = routes[0].summary;
+            const distanceKm = (summary.totalDistance / 1000).toFixed(1);
+            const timeHrs = Math.floor(summary.totalTime / 3600);
+            const timeMins = Math.round((summary.totalTime % 3600) / 60);
+            
+            document.getElementById('roadDist').innerText = distanceKm + ' km';
+            document.getElementById('timeBox').innerText = `Travel time: ${timeHrs > 0 ? timeHrs + 'h ' : ''}${timeMins}m`;
+        });
+
+        map.on('click', function(e) {
+            const wps = routingControl.getWaypoints();
+            if (!wps[0] || !wps[0].latLng) {
+                routingControl.spliceWaypoints(0, 1, e.latlng);
+            } else if (!wps[1] || !wps[1].latLng) {
+                routingControl.spliceWaypoints(1, 1, e.latlng);
+            }
+        });
+    }
+
+    async function search(query, type) {
+        if (query.length < 3) return;
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&countrycodes=in&limit=5`);
+        const data = await res.json();
+        const container = type === 'start' ? startSugg : endSugg;
+        
+        container.innerHTML = '';
+        container.style.display = 'block';
+        
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerText = item.display_name;
+            div.onclick = () => {
+                const latlng = L.latLng(item.lat, item.lon);
+                if (type === 'start') {
+                    routingControl.spliceWaypoints(0, 1, latlng);
+                    startInput.value = item.display_name;
+                } else {
+                    routingControl.spliceWaypoints(1, 1, latlng);
+                    endInput.value = item.display_name;
+                }
+                container.style.display = 'none';
+                map.panTo(latlng);
+            };
+            container.appendChild(div);
+        });
+    }
+
+    let searchTimeout;
+    [startInput, endInput].forEach(input => {
+        input.addEventListener('input', (e) => {
+            const type = e.target.id === 'startInput' ? 'start' : 'end';
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => search(e.target.value, type), 400);
+        });
+    });
+
+    function resetApp() {
+        routingControl.setWaypoints([]);
+        startInput.value = '';
+        endInput.value = '';
+        document.getElementById('roadDist').innerText = '0.0 km';
+        document.getElementById('timeBox').innerText = 'Travel time: --';
+        map.setView([20.5937, 78.9629], 5);
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.input-group')) {
+            startSugg.style.display = 'none';
+            endSugg.style.display = 'none';
+        }
+    });
+
+    window.onload = initMap;
+</script>
+
+</body>
+</html>

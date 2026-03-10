@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cinematic Pro Player</title>
+    <style>
+        :root {
+            --primary: #e50914;
+            --glass: rgba(15, 15, 15, 0.85);
+            --text: #ffffff;
+            --font-main: 'Segoe UI', Roboto, -apple-system, sans-serif;
+            --ctrl-height: 48px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: #000;
+            color: var(--text);
+            font-family: var(--font-main);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        /* --- Player Container --- */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Fullscreen/Mobile adjustments */
+        @media (max-width: 768px) or (orientation: landscape) {
+            .video-container { max-width: 100%; height: auto; }
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: filter 0.3s ease;
+        }
+
+        /* --- Loading Spinner --- */
+        .loader {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+            z-index: 20;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- Controls Overlay --- */
+        .video-controls {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.6) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .video-container.paused .video-controls,
+        .video-container:hover .video-controls,
+        .video-controls.active {
+            opacity: 1;
+        }
+
+        /* --- Top Bar (URL & Title) --- */
+        .top-bar {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .url-input {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            color: white;
+            padding: 6px 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        /* --- Seek Bar --- */
+        .timeline-container {
+            width: 100%;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        .timeline {
+            position: relative;
+            height: 4px;
+            width: 100%;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            transition: height 0.1s;
+        }
+
+        .timeline-container:hover .timeline { height: 6px; }
+
+        .bar-current {
+            position: absolute;
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            border-radius: 2px;
+        }
+
+        /* --- Buttons Area --- */
+        .bottom-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: var(--ctrl-height);
+            gap: 10px;
+        }
+
+        .ctrl-group { display: flex; align-items: center; gap: 8px; }
+
+        button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        button:active { background: rgba(255,255,255,0.1); }
+        button svg { width: 26px; height: 26px; fill: currentColor; }
+
+        .time-display {
+            font-size: 13px;
+            font-weight: 500;
+            min-width: 80px;
+            margin-left: 5px;
+        }
+
+        /* --- Volume Slider (Hide on small mobile) --- */
+        .volume-container { display: flex; align-items: center; gap: 5px; }
+        @media (max-width: 480px) { .volume-container input { display: none; } }
+
+        /* --- Settings Panel --- */
+        .settings-panel {
+            position: absolute;
+            bottom: 70px;
+            right: 15px;
+            width: 280px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .settings-panel.show { display: flex; }
+
+        .setting-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-row label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+
+        .setting-row input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .setting-row select {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        /* --- Mobile Tap Zones --- */
+        .tap-zone {
+            position: absolute;
+            top: 15%;
+            height: 70%;
+            width: 30%;
+            z-index: 5;
+        }
+        .tap-left { left: 0; }
+        .tap-right { right: 0; }
+    </style>
+</head>
+<body>
+
+<div class="video-container paused" id="player">
+    <div class="loader" id="loader"></div>
+    
+    <div class="tap-zone tap-left" id="tap-back"></div>
+    <div class="tap-zone tap-right" id="tap-forward"></div>
+
+    <video id="main-video" playsinline>
+        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+    </video>
+
+    <div class="video-controls" id="controls">
+        <div class="top-bar">
+            <input type="text" class="url-input" id="url-field" placeholder="Paste .mp4 URL here...">
+            <button onclick="changeSource()" style="width: auto; padding: 0 15px; border-radius: 4px; background: var(--primary); font-size: 12px; font-weight: bold;">LOAD</button>
+        </div>
+
+        <div class="middle-controls"></div> <div class="bottom-section">
+            <div class="timeline-container" id="timeline-container">
+                <div class="timeline">
+                    <div class="bar-current" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="bottom-controls">
+                <div class="ctrl-group">
+                    <button id="play-btn">
+                        <svg id="play-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg id="pause-svg" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+                    
+                    <div class="volume-container">
+                        <button id="mute-btn"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>
+                        <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1">
+                    </div>
+
+                    <div class="time-display">
+                        <span id="cur-time">0:00</span> / <span id="dur-time">0:00</span>
+                    </div>
+                </div>
+
+                <div class="ctrl-group">
+                    <button id="snap-btn" title="Screenshot"><svg viewBox="0 0 24 24"><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg></button>
+                    <button id="settings-btn"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
+                    <button id="fs-btn"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-panel" id="settings-panel">
+        <div class="setting-row">
+            <label>Brightness</label>
+            <input type="range" id="bright-range" min="50" max="150" value="100">
+        </div>
+        <div class="setting-row">
+            <label>Saturation</label>
+            <input type="range" id="sat-range" min="0" max="200" value="100">
+        </div>
+        <div class="setting-row">
+            <label>Speed</label>
+            <select id="playback-speed">
+                <option value="0.5">0.5x</option>
+                <option value="1" selected>Normal</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2x</option>
+            </select>
+        </div>
+        <button id="close-settings" style="width: 100%; background: var(--primary); border-radius: 4px; height: 32px; font-size: 12px; margin-top: 5px;">CLOSE</button>
+    </div>
+</div>
+
+<script>
+    const player = document.getElementById('player');
+    const video = document.getElementById('main-video');
+    const controls = document.getElementById('controls');
+    const playBtn = document.getElementById('play-btn');
+    const playSvg = document.getElementById('play-svg');
+    const pauseSvg = document.getElementById('pause-svg');
+    const progress = document.getElementById('progress-bar');
+    const timeline = document.getElementById('timeline-container');
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const loader = document.getElementById('loader');
+
+    let hideTimeout;
+
+    // --- Core Functionality ---
+    function togglePlay() {
+        if (video.paused) {
+            video.play();
+            player.classList.remove('paused');
+            playSvg.style.display = 'none';
+            pauseSvg.style.display = 'block';
+        } else {
+            video.pause();
+            player.classList.add('paused');
+            playSvg.style.display = 'block';
+            pauseSvg.style.display = 'none';
+        }
+    }
+
+    playBtn.addEventListener('click', togglePlay);
+    video.addEventListener('click', () => {
+        if(window.innerWidth > 768) togglePlay();
+        resetHideTimer();
+    });
+
+    // --- UI Auto-hide ---
+    function resetHideTimer() {
+        controls.classList.add('active');
+        clearTimeout(hideTimeout);
+        if (!video.paused) {
+            hideTimeout = setTimeout(() => {
+                controls.classList.remove('active');
+                settingsPanel.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    player.addEventListener('mousemove', resetHideTimer);
+    player.addEventListener('touchstart', resetHideTimer);
+
+    // --- Timeline & Progress ---
+    video.addEventListener('timeupdate', () => {
+        const perc = (video.currentTime / video.duration) * 100;
+        progress.style.width = perc + '%';
+        document.getElementById('cur-time').textContent = formatTime(video.currentTime);
+    });
+
+    video.addEventListener('loadedmetadata', () => {
+        document.getElementById('dur-time').textContent = formatTime(video.duration);
+    });
+
+    timeline.addEventListener('click', (e) => {
+        const rect = timeline.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / rect.width;
+        video.currentTime = pos * video.duration;
+    });
+
+    function formatTime(sec) {
+        let m = Math.floor(sec / 60);
+        let s = Math.floor(sec % 60);
+        return `${m}:${s < 10 ? '0'+s : s}`;
+    }
+
+    // --- Settings & Filters ---
+    settingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        settingsPanel.classList.toggle('show');
+    });
+
+    document.getElementById('close-settings').addEventListener('click', () => settingsPanel.classList.remove('show'));
+
+    function applyFilters() {
+        const b = document.getElementById('bright-range').value;
+        const s = document.getElementById('sat-range').value;
+        video.style.filter = `brightness(${b}%) saturate(${s}%)`;
+    }
+
+    document.getElementById('bright-range').addEventListener('input', applyFilters);
+    document.getElementById('sat-range').addEventListener('input', applyFilters);
+    document.getElementById('playback-speed').addEventListener('change', (e) => {
+        video.playbackRate = e.target.value;
+    });
+
+    // --- Utilities ---
+    document.getElementById('fs-btn').addEventListener('click', () => {
+        if (!document.fullscreenElement) player.requestFullscreen();
+        else document.exitFullscreen();
+    });
+
+    function changeSource() {
+        const url = document.getElementById('url-field').value;
+        if(url) {
+            video.src = url;
+            video.play();
+        }
+    }
+
+    document.getElementById('snap-btn').addEventListener('click', () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        const link = document.createElement('a');
+        link.download = 'capture.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+
+    // --- Volume ---
+    document.getElementById('volume-slider').addEventListener('input', (e) => {
+        video.volume = e.target.value;
+        video.muted = e.target.value == 0;
+    });
+
+    // --- Mobile Touch Gestures ---
+    document.getElementById('tap-back').addEventListener('dblclick', () => video.currentTime -= 10);
+    document.getElementById('tap-forward').addEventListener('dblclick', () => video.currentTime += 10);
+
+    // --- Keyboard ---
+    window.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT') return;
+        if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+        if (e.key === 'f') player.requestFullscreen();
+        if (e.key === 'ArrowRight') video.currentTime += 5;
+        if (e.key === 'ArrowLeft') video.currentTime -= 5;
+    });
+
+    // --- Buffering ---
+    video.addEventListener('waiting', () => loader.style.display = 'block');
+    video.addEventListener('playing', () => loader.style.display = 'none');
+</script>
+
+</body>
+</html>

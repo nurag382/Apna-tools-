@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horizontal Lock Camera</title>
+
+<style>
+  body {
+    margin: 0;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  video {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    transform: rotate(90deg); /* Force horizontal */
+  }
+
+  button {
+    position: fixed;
+    bottom: 20px;
+    padding: 12px 20px;
+    font-size: 18px;
+    z-index: 10;
+  }
+</style>
+</head>
+
+<body>
+
+<button onclick="startCamera()">Start Camera</button>
+<video id="cam" autoplay playsinline></video>
+
+<script>
+async function startCamera() {
+  const video = document.getElementById("cam");
+
+  try {
+    // Lock orientation to landscape
+    if (screen.orientation && screen.orientation.lock) {
+      await screen.orientation.lock("landscape");
+    }
+
+    // Open camera
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" }, // back camera
+      audio: false
+    });
+
+    video.srcObject = stream;
+
+  } catch (err) {
+    alert("Camera error: " + err);
+  }
+}
+</script>
+
+</body>
+</html>

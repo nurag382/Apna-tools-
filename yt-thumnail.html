@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YouTube Video Thumbnail Downloader | Apna Tools</title>
+    <meta name="description" content="Free tool to extract and download high-quality thumbnails from any YouTube video instantly. Provided by Apna Tools.">
+    
+    <!-- SEO Keywords: YouTube thumbnail downloader, download YouTube cover, free YT thumbnail grabber, Apna Tools -->
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Prevent scrolling & fit everything in one screen */
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            height: 100vh; /* Fallback */
+            height: 100dvh; /* Dynamic viewport height for mobile */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eaeaea;
+            flex-shrink: 0;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 0.9rem;
+            color: #555;
+            font-weight: 500;
+            display: none;
+        }
+
+        @media(min-width: 600px) {
+            .header-title { display: block; }
+        }
+
+        /* Main Content Container */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Tool Card */
+        .card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 650px;
+            border-radius: 20px;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        p.description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        /* Input Area */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            flex-direction: column;
+        }
+
+        @media(min-width: 500px) {
+            .input-group { flex-direction: row; }
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            border: 1.5px solid #dcdcdc;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+            color: #000;
+            background: #fafafa;
+        }
+
+        input[type="text"]:focus {
+            border-color: #000;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #000000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            background-color: #333333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Timer Animation */
+        #timer {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #444;
+            height: 20px; /* Fixed height to prevent layout shift */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #timer.visible {
+            opacity: 1;
+        }
+
+        /* Output Area */
+        #output {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+            transition: opacity 0.4s ease, height 0.4s ease;
+        }
+
+        #output.show {
+            opacity: 1;
+            visibility: visible;
+            height: auto; /* Lets flex layout adapt organically */
+        }
+
+        .thumbnail-container {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eaeaea;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #thumb-img {
+            width: 100%;
+            max-height: 28vh; /* Restrict height to prevent screen scrolling */
+            object-fit: contain;
+            display: block;
+        }
+
+        .download-link {
+            text-decoration: none;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .note {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        /* Footer */
+        footer {
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eaeaea;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a {
+            color: #555;
+            text-decoration: none;
+            margin-left: 15px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #000;
+        }
+
+        .back-home {
+            text-decoration: none;
+            color: #000;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-home:hover {
+            text-decoration: underline;
+        }
+
+        /* Error message */
+        #error-msg {
+            color: #d32f2f;
+            font-size: 0.85rem;
+            height: 15px;
+            margin-top: -5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="brand-name">Apna Tools</div>
+        <div class="header-title">YouTube Thumbnail Downloader</div>
+    </header>
+
+    <!-- Main Tool Section -->
+    <main>
+        <div class="card">
+            <h1>Extract YT Thumbnails</h1>
+            <p class="description">Paste any YouTube video URL below to grab its high-resolution cover image instantly.</p>
+            
+            <div class="input-group">
+                <input type="text" id="yt-url" placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ" autocomplete="off">
+                <button id="extract-btn">Extract</button>
+            </div>
+            
+            <div id="error-msg"></div>
+            
+            <div id="timer">⏱ 0.0s</div>
+            
+            <div id="output">
+                <div class="thumbnail-container">
+                    <img id="thumb-img" src="" alt="Video Thumbnail">
+                </div>
+                <div>
+                    <a id="download-btn" href="#" target="_blank" class="download-link">View / Download Full Image</a>
+                    <p class="note">Opens in a new tab. Right-click or long-press to save.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <div>
+            <a href="#" class="back-home">← Back to Home</a>
+        </div>
+        <div style="color: #666;">
+            &copy; 2024 Apna Tools
+        </div>
+        <div class="footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+        </div>
+    </footer>
+
+    <!-- Logic Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const extractBtn = document.getElementById("extract-btn");
+            const urlInput = document.getElementById("yt-url");
+            const timerEl = document.getElementById("timer");
+            const outputEl = document.getElementById("output");
+            const imgEl = document.getElementById("thumb-img");
+            const downloadBtn = document.getElementById("download-btn");
+            const errorMsg = document.getElementById("error-msg");
+
+            let timerInterval;
+
+            extractBtn.addEventListener("click", processUrl);
+            urlInput.addEventListener("keypress", function(e) {
+                if(e.key === "Enter") processUrl();
+            });
+
+            function processUrl() {
+                const url = urlInput.value.trim();
+                errorMsg.innerText = "";
+                
+                if (!url) {
+                    errorMsg.innerText = "Please enter a YouTube URL.";
+                    return;
+                }
+
+                const videoId = extractVideoID(url);
+                if (!videoId) {
+                    errorMsg.innerText = "Invalid URL. Could not detect YouTube Video ID.";
+                    return;
+                }
+
+                // Reset UI for processing
+                outputEl.classList.remove("show");
+                imgEl.src = "";
+                timerEl.classList.add("visible");
+                extractBtn.disabled = true;
+                extractBtn.style.opacity = "0.7";
+                extractBtn.innerText = "Processing...";
+
+                // Start Timer Animation
+                let time = 0;
+                timerEl.innerText = `⏱ 0.0s`;
+                clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    time += 0.1;
+                    timerEl.innerText = `⏱ ${time.toFixed(1)}s`;
+                }, 100);
+
+                // Simulate slight network delay for better UX animation (0.8 seconds)
+                setTimeout(() => {
+                    fetchThumbnail(videoId);
+                }, 800);
+            }
+
+            function fetchThumbnail(videoId) {
+                // URLs for thumbnails
+                const maxResUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                const hqResUrl  = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+                // Load image via JS to check if maxresdefault exists (older videos might not have it)
+                const tempImg = new Image();
+                tempImg.onload = function() {
+                    // YouTube returns a generic 120px wide image if maxres doesn't exist
+                    let finalUrl = (this.width <= 120) ? hqResUrl : maxResUrl;
+                    displayResult(finalUrl);
+                };
+                tempImg.onerror = function() {
+                    // Fallback to High Quality if network error on maxres
+                    displayResult(hqResUrl);
+                };
+                tempImg.src = maxResUrl;
+            }
+
+            function displayResult(imageUrl) {
+                clearInterval(timerInterval);
+                
+                imgEl.src = imageUrl;
+                downloadBtn.href = imageUrl;
+
+                // Stop Timer & Show Output
+                setTimeout(() => {
+                    timerEl.classList.remove("visible");
+                    outputEl.classList.add("show");
+                    
+                    // Reset Button
+                    extractBtn.disabled = false;
+                    extractBtn.style.opacity = "1";
+                    extractBtn.innerText = "Extract Again";
+                }, 300); // slight overlap delay for smooth transition
+            }
+
+            // Regex to parse various YouTube URL formats (standard, shortened, shorts, embeds)
+            function extractVideoID(url) {
+                const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/;
+                const match = url.match(regExp);
+                return (match && match[1].length === 11) ? match[1] : null;
+            }
+        });
+    </script>
+
+</body>
+</html>
